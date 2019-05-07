@@ -18,6 +18,7 @@ import sys
 
 # constants and gloabl variable
 input_file = "Adjacency Matrix.txt"
+size = 0
 
 """
 Check if directory exist
@@ -46,8 +47,12 @@ def buildDictionary(file_name):
         connected = line[2]
         if connected != '1':
           continue
-        from_doc = line[0]
-        to_doc = line[1]
+        from_doc = int(line[0])
+        to_doc = int(line[1])
+        # Find out the matrix length
+        global size
+        size = max(size, from_doc)
+        size = max(size, to_doc)
 
         # Check if key exists avoid KeyError
         if from_doc not in page_dict:
@@ -59,13 +64,34 @@ def buildDictionary(file_name):
   except OSError:
             print(OSError)
 
+
+def buildMatrix(page_dict):
+  matrix = []
+  for i in range (size):                 
+      new = []         
+      for j in range (size):
+        new.append(1 if j % 2 == 0 else 0)
+      matrix.append(new)
+
+  return matrix
+
+def printArray(input_arr):
+  for i in range(0, len(input_arr)):
+    for j in input_arr[i]:
+      print (input_arr[i][j], end=' ')
+    print ()
+
 """
 Main funciton
 """
 def main():
   checkFileExist(input_file)
-  file_name = input_file
   page_dict = buildDictionary(input_file)
+  print (size)
+  print (len(page_dict))
+  matrix_m = buildMatrix(page_dict)
+  # printArray(matrix_m)
+ 
 
 
   # print ("page_dic size: %d" % (len(page_dict)))
@@ -73,8 +99,12 @@ def main():
   #   print ("key: %s" % (key))
   #   print ("values: ", page_dict[key], sep = ' ')
 
-  print (page_dict["212"])
 
+  # key = "2"
+  # if key in page_dict:
+  #   print (page_dict["2"])
+  # else:
+  #   print ("Key doesn't exist in the page_dict.")
 
 
 if __name__ == "__main__":
