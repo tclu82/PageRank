@@ -23,6 +23,14 @@ BETA = 0.85
 EPSILON = 0.0001
 
 """
+Define a VectorData class to store vector and the converged count
+"""
+class VectorData:
+  def __init__(self, vector, count):
+    self.vector = vector
+    self.count = count
+
+"""
 Check if directory exist
 """
 def checkFileExist(dirname):
@@ -42,9 +50,6 @@ def buildDictionary(file_name):
 
       for line in content:
         count += 1
-        # if count > 200:
-        #   break
-
         line = line.split()
         connected = line[2]
         if connected != '1':
@@ -110,6 +115,47 @@ def buildOriginRankVector():
   return matrix
 
 """
+Calculate the converged rank vector
+"""
+def getConvergedRankVector(matrix, vector):
+  next_vector = vector
+  result = calculateMatrixWithVector(matrix, vector)
+  count = 1
+
+  while calculateVectorDifference(result, next_vector) > EPSILON:
+    next_vector = result
+    result = calculateMatrixWithVector(matrix, result)
+    count += 1
+  return VectorData(result, count)
+
+"""
+Matrix and Vector multiplication
+"""
+def calculateMatrixWithVector(matrix, vector):
+  next_vector = []
+  for i in range(0, SIZE):                 
+    temp = []
+    for j in range(0, 1):
+      temp.append(0) 
+    next_vector.append(temp)
+
+  for i in range(0, SIZE):
+    for j in range(0, SIZE):
+      next_vector[i][0] += matrix[i][j] * vector[j][0] 
+
+  return next_vector
+
+"""
+Calculate the difference between 2 input vectors
+"""
+def calculateVectorDifference(vector1, vector2):
+  difference = 0
+  for i in range(0, len(vector1)):
+    for j in range(0, len(vector1[0])):
+      difference += abs(vector1[i][j] - vector2[i][j])
+  return difference
+
+"""
 Print out matrix
 """
 def printArray(input_arr):
@@ -137,6 +183,16 @@ def main():
   origin_rank_vector = buildOriginRankVector()
   printArray(origin_rank_vector)
 
+  print("\n4. The converged rank vector:")
+  print("Using Matrix M to calculate converged rank vector:")
+  converged_with_matrix_m = getConvergedRankVector(matrix_m, origin_rank_vector)
+  printArray(converged_with_matrix_m.vector)
+
+  print("\nUsing Matrix A to calculate converged rank vector:")
+  converged_with_matrix_a = getConvergedRankVector(matrix_a, origin_rank_vector)
+  printArray(converged_with_matrix_a.vector)
+
+  print("\n5. It took %d iterations for Matrix M and %d iterations for Matrix A to get converged vectors"  % (converged_with_matrix_m.count, converged_with_matrix_a.count))
 
 if __name__ == "__main__":
     main()
