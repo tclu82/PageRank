@@ -16,9 +16,11 @@
 import os
 import sys
 
-# constants and gloabl variable
-input_file = "Adjacency Matrix.txt"
-size = 0
+# constants and global variable
+INPUT_FILE = "graph.txt"
+SIZE = 0
+BETA = 0.85
+EPSILON = 0.0001
 
 """
 Check if directory exist
@@ -50,9 +52,9 @@ def buildDictionary(file_name):
         from_doc = int(line[0])
         to_doc = int(line[1])
         # Find out the matrix length
-        global size
-        size = max(size, from_doc)
-        size = max(size, to_doc)
+        global SIZE
+        SIZE = max(SIZE, from_doc)
+        SIZE = max(SIZE, to_doc)
 
         # Check if key exists avoid KeyError
         if from_doc not in page_dict:
@@ -64,47 +66,76 @@ def buildDictionary(file_name):
   except OSError:
             print(OSError)
 
-
-def buildMatrix(page_dict):
+"""
+Use page_dict to build Matrix M
+"""
+def buildMatrixM(page_dict):
   matrix = []
-  for i in range (size):                 
-      new = []         
-      for j in range (size):
-        new.append(1 if j % 2 == 0 else 0)
-      matrix.append(new)
+  for i in range (0, SIZE):                 
+    temp = []
+    for j in range (0, SIZE):
+      temp.append(0) 
+    matrix.append(temp)
+
+  for i in page_dict:
+    count = len(page_dict[i])
+    for j in page_dict[i]:
+      matrix[j-1][i-1] = 1 / count
 
   return matrix
 
+"""
+Use Matrix M and BETA to build Matrix A
+"""
+def buildMatrixA(matrix_m):
+  matrix_a = []
+  for i in range (0, SIZE):                 
+    temp = []
+    for j in range (0, SIZE):
+      value = matrix_m[i][j] * BETA + (1 - BETA) / SIZE
+      temp.append(value) 
+    matrix_a.append(temp)
+  return matrix_a
+
+"""
+Build the origin rank vector
+"""
+def buildOriginRankVector():
+  matrix = []
+  for i in range (0, SIZE):                 
+    temp = []
+    for j in range (0, 1):
+      temp.append(1 / SIZE) 
+    matrix.append(temp)
+  return matrix
+
+"""
+Print out matrix
+"""
 def printArray(input_arr):
   for i in range(0, len(input_arr)):
-    for j in input_arr[i]:
-      print (input_arr[i][j], end=' ')
+    for j in range(0, len(input_arr[0])):
+      print ("%.4f\t" % (input_arr[i][j]), end='')
     print ()
 
 """
 Main funciton
 """
 def main():
-  checkFileExist(input_file)
-  page_dict = buildDictionary(input_file)
-  print (size)
-  print (len(page_dict))
-  matrix_m = buildMatrix(page_dict)
-  # printArray(matrix_m)
- 
+  checkFileExist(INPUT_FILE)
+  page_dict = buildDictionary(INPUT_FILE)
+  matrix_m = buildMatrixM(page_dict)
+  
+  print ("1. The output of Matrix M:")
+  printArray(matrix_m)
 
-
-  # print ("page_dic size: %d" % (len(page_dict)))
-  # for key in page_dict:
-  #   print ("key: %s" % (key))
-  #   print ("values: ", page_dict[key], sep = ' ')
-
-
-  # key = "2"
-  # if key in page_dict:
-  #   print (page_dict["2"])
-  # else:
-  #   print ("Key doesn't exist in the page_dict.")
+  print ("\n2. The output of Matrix A:")
+  matrix_a = buildMatrixA(matrix_m)
+  printArray(matrix_a)
+  
+  print ("\n3. The origin rank vector:")
+  origin_rank_vector = buildOriginRankVector()
+  printArray(origin_rank_vector)
 
 
 if __name__ == "__main__":
