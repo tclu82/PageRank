@@ -1,15 +1,15 @@
 #/usr/bin/env python
 
 # ======================================================================================
-# title           :assighment1.py
-# description     :TCSS 554 Information retrieval and Search assignment 1
+# title           :pagerank.py
+# description     :TCSS 554 Information retrieval and Search assignment 2
 # author          :Zac Lu
 # date            :20190504
 # version         :1.0
 #
 # usage           :python3 pagerank.py
 #
-# notes           :stopwords.txt and transcripts need to be downloaded for this script
+# notes           :
 # python_version  :3.7.3
 # ======================================================================================
 
